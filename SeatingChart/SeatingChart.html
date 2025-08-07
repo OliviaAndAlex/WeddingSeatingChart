@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liv and Alex's Wedding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ballet:opsz@16..72&family=Frank+Ruhl+Libre:wght@300..900&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Frank Ruhl Libre', serif;
+            background-color: #000;
+            color: #fff;
+        }
+
+        .homepage {
+            height: 100vh;
+            width: 100vw;
+            background-image: url('Livnalex.JPG');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .homepage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(128, 128, 128, 0.5);
+        }
+
+        .search-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        #name-input {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 15px 20px;
+            font-size: 1.5em;
+            width: 300px;
+            text-align: center;
+            font-family: 'Ballet', cursive;
+        }
+
+        #name-input::placeholder {
+            color: #ddd;
+        }
+
+        #autocomplete-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #fff;
+            border-top: none;
+            z-index: 2;
+        }
+
+        #autocomplete-list li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #autocomplete-list li:hover {
+            background-color: #555;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .results-page {
+            text-align: center;
+            padding: 50px 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .results-page.visible {
+            opacity: 1;
+        }
+
+        .results-page.white-bg {
+            background-color: #fff;
+            color: #000;
+        }
+
+        #alebrije-image {
+            max-width: 80%;
+            max-height: 40vh;
+            margin-bottom: 20px;
+            animation: fadeIn 2s;
+        }
+
+        @media (max-width: 768px) {
+            #alebrije-image {
+                max-height: 50vh;
+                margin-bottom: 10px;
+            }
+        }
+
+        .info {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .info.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #alebrije-description, #guest-name, #table-seat, #meal-selection {
+            font-size: 1.2em;
+            margin: 10px auto;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        #meal-selection {
+            margin-bottom: 40px;
+        }
+
+        #guest-name {
+            font-family: 'Ballet', cursive;
+            font-size: 2.5em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="homepage" id="homepage">
+        <div class="search-container">
+            <input type="text" id="name-input" placeholder="Enter Your Name">
+            <ul id="autocomplete-list"></ul>
+        </div>
+    </div>
+
+    <div class="results-page hidden" id="results-page">
+        <img id="alebrije-image" src="" alt="Your Alebrije">
+        <h1 id="guest-name" class="info"></h1>
+        <p id="table-seat" class="info"></p>
+        <p id="meal-selection" class="info"></p>
+        <p id="alebrije-description" class="info"></p>
+    </div>
+
+    <script>
+        const alebrijeNames = ["toucan", "horned toucan", "horned heron", "racoon", "sea turtle", "hedgehog", "goat-dog", "peacock-turtle"];
+        const alebrijeDescriptions = {
+            1: "<i>One might wonder at the significance of the Toucan, a creature whose most vibrant signature is its voice. Perhaps it serves as a guide for a union built on expressive and heartfelt communication, where every word shared is as colorful and intentional as the patterns on its form. Adorned in hues of nature and creativity, it seems to suggest that a life shared is a life of joyful expression, a continuous, beautiful dialogue between two spirits.</i>",
+            2: "<i>Here we encounter a fascinating paradox of nature: the Horned Toucan. What does it mean when the spirit of communication is bestowed with the emblem of unyielding strength? It may represent the conviction required to protect a shared vision, a testament to a love that is not only expressive but also formidable. Its kaleidoscopic patterns hint at the infinite spectrum of experiences two people will share, bonded by the strength to honor their truth.</i>",
+            3: "<i>Behold the quiet dignity of the Horned Heron, a spirit of profound stillness and resolve. The heron is a master of patience, waiting for the perfect moment to reveal its purpose. Could this be a guide for the thoughtful attention a lifelong partnership requires? It is a reminder to move with grace and awareness, while the horns suggest a shared strength, a silent promise to stand guard over the sacred space of their union against all challenges.</i>",
+            4: "<i>What secrets might the masked Raccoon hold, a guide whose spirit is one of profound curiosity and intelligence? It appears here as a companion for life’s intricate journey, celebrating the resourcefulness needed to navigate its complexities together. The mesmerizing patterns that envelop its form could symbolize the beautiful and complex life two people weave together, finding clever and elegant solutions to every puzzle they encounter as one.</i>",
+            5: "<i>It is said that the Sea Turtle navigates the vast oceans by an unseen wisdom, guided by currents both ancient and deep. As a spirit guide, it speaks to an enduring love, one that can gracefully traverse the great emotional tides of a lifetime. Its presence here may be a blessing of longevity and resilience, a reminder that the most profound journeys are navigated not by sight, but by the unwavering intuition of the heart.</i>",
+            6: "<i>Consider the curious nature of the Hedgehog, a being that invites discovery yet commands respect. It offers a poignant lesson in protection—not with aggressive force, but by safeguarding a gentle interior. Perhaps it signifies the creation of a sacred home, a sanctuary built by two people where vulnerability is safe and their shared inner world can flourish, shielded by mutual care and respect for the boundaries they create together.</i>",
+            7: "<i>Before you stands the Goat-Dog, a creature born of two noble spirits, a perfect allegory for a devoted partnership. Here, the goat’s ambition to climb to the highest peaks is fused with the dog’s unwavering loyalty to the path. This remarkable guide represents a journey where independence and companionship are not opposing forces, but rather the twin virtues that elevate a shared life, ensuring the climb is both bold and true.</i>",
+            8: "<i>Could there be a more wondrous fusion than that of the Peacock and the Turtle? Here, the turtle’s ancient, emotional wisdom provides the foundation for the peacock’s radiant and visionary beauty. This spirit guide may represent the highest aspiration of a partnership: a love that is both deep and enduring, yet brilliant and magnificent for all to witness. It speaks of a union that finds its strength in the depths of its soul and its joy in the vibrant expression of its truth.</i>"
+        };
+
+        const guestData = [
+            {"name": "Pablo Ramos Soszna", "table": 6, "seat": 2, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Pablo de la Torre", "table": 13, "seat": 2, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Mauricio Hernandez", "table": 9, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Emerson Miao", "table": 6, "seat": 2, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Evie Henderson", "table": 9, "seat": 2, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Maddie Shutler", "table": 7, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Ashlyn Taylor", "table": 9, "seat": 4, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Courtney Morris", "table": 9, "seat": 2, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Hank Henderson", "table": 6, "seat": 1, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Ed Horvat", "table": 10, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Joy Volpi", "table": 4, "seat": 1, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Adam Volpi", "table": 4, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Rick Volpi", "table": 7, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Donna Bryant", "table": 10, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Andy Bryant", "table": 1, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Matt Bryant", "table": 12, "seat": 3, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Marcia Robinson", "table": 14, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Dan Robinson", "table": 14, "seat": 3, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Jennifer Horvat", "table": 5, "seat": 4, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Michael Horvat", "table": 8, "seat": 3, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Mario Ramos", "table": 6, "seat": 8, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Esteban Soszna", "table": 14, "seat": 8, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Dra. Alicia Ramos", "table": 6, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Miguel Angel Acosta", "table": 6, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Abby Clark", "table": 11, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Alexis Mast", "table": 3, "seat": 8, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Carly O'Brien", "table": 4, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Drew Robinson", "table": 10, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Evan Lambert", "table": 8, "seat": 1, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Jillian Leverett", "table": 5, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Jose Galan", "table": 14, "seat": 2, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Lauren Grimm", "table": 13, "seat": 3, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Liz Wiley", "table": 8, "seat": 3, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Marco Garcia", "table": 8, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Maria Araujo", "table": 11, "seat": 8, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Melissa Cuervo", "table": 10, "seat": 8, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Quinn Shook", "table": 5, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Shanan Ashton", "table": 4, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Shelagh Campbell-Browne", "table": 7, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Zahra Mohseni", "table": 10, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Nazli Morel", "table": 6, "seat": 6, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Lexi Bell", "table": 10, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Jing Khoo", "table": 2, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Anna Schramski", "table": 14, "seat": 7, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Alexandra Mowery", "table": 13, "seat": 3, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Rachel Rafferty", "table": 11, "seat": 1, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Rana Hegazi", "table": 14, "seat": 4, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Julia Gallatin", "table": 14, "seat": 8, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Lindsey King", "table": 10, "seat": 8, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "Justin Moran", "table": 7, "seat": 5, "meal": "Herb Crusted Chicken Breast With Cajun Butter And Fines Herbs"},
+            {"name": "James Co", "table": 9, "seat": 1, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Joseph Patrick", "table": 14, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Daniel Carlsen", "table": 10, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Nayana Ravishankar", "table": 4, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Steven Madias", "table": 12, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Mallory Waker-McKnight", "table": 5, "seat": 1, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Justice Crank", "table": 2, "seat": 1, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Nicolas Rada", "table": 13, "seat": 6, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Justin Heintz", "table": 11, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Lexi Powers", "table": 6, "seat": 1, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Claire Creighton", "table": 6, "seat": 3, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Ashley Sabath", "table": 7, "seat": 4, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Patrick Benton", "table": 11, "seat": 3, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Kurt Elsasser", "table": 7, "seat": 6, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Andrew Badea", "table": 8, "seat": 1, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Jacob Halligan", "table": 9, "seat": 8, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "George Durisek", "table": 4, "seat": 3, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Paras Shah", "table": 4, "seat": 5, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Jordan Williams", "table": 3, "seat": 5, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Nicholas McCartan", "table": 12, "seat": 3, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Michael Peters", "table": 9, "seat": 6, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Drew Steinbrunner", "table": 8, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Eric Popp", "table": 4, "seat": 4, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Ashton Barger", "table": 13, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Brian Moura", "table": 14, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Alicia Olaechea", "table": 13, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Alexys Mathangani", "table": 8, "seat": 5, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Gianluca Mavica", "table": 14, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Keith Watters", "table": 14, "seat": 5, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Jerry O'Hara", "table": 7, "seat": 3, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Bernardo Perez", "table": 8, "seat": 5, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Johana Troutman", "table": 2, "seat": 6, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Gerardo de la Torre", "table": 12, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Omar Leyva", "table": 7, "seat": 4, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Ignacio Dapic", "table": 4, "seat": 4, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Mark Yerse", "table": 12, "seat": 8, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Eduardo Solis", "table": 2, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Felipe Castro", "table": 5, "seat": 5, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Afredo Diaz", "table": 13, "seat": 8, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Sergio Barrera", "table": 9, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Ivan Perez", "table": 12, "seat": 8, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Sara Howard", "table": 13, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Luke Morais", "table": 12, "seat": 4, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Zeke Skene", "table": 8, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Dan Morris", "table": 0, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Joanie Henderson", "table": 14, "seat": 6, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Elaine Horvat", "table": 9, "seat": 4, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Noah Volpi", "table": 10, "seat": 8, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Alicia Charron", "table": 4, "seat": 5, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Loretta Henderson", "table": 5, "seat": 3, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Katie Bryant", "table": 3, "seat": 6, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Shanda Bryant", "table": 12, "seat": 7, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Amy Robinson", "table": 14, "seat": 1, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Sonia Soszna", "table": 12, "seat": 4, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Sergio Conde", "table": 14, "seat": 2, "meal": "Chilean Salmon With A Lemon Caper Cream Sauce"},
+            {"name": "Isabel", "table": 6, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Cameron Hoover", "table": 5, "seat": 3, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Matthew O'Brien", "table": 6, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Jordan Robinson", "table": 13, "seat": 1, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Lohitha Guntupalli", "table": 1, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Kase Van Erkelens", "table": 10, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Liliana Gonzalez", "table": 2, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Aditya Kumar", "table": 2, "seat": 2, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Ben Lopez", "table": 5, "seat": 2, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Drew Shook", "table": 3, "seat": 7, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Steph Campbell-Browne", "table": 5, "seat": 2, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Cole Dunbar", "table": 6, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Anibal Mancia", "table": 7, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Kai Hannum", "table": 4, "seat": 6, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Michael Baxter", "table": 7, "seat": 5, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Michael Flynn", "table": 3, "seat": 3, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Abby Moran", "table": 3, "seat": 5, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Erin Stewart", "table": 10, "seat": 1, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Caylee Patrick", "table": 14, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Megan Madias", "table": 11, "seat": 6, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Jordan McKnight", "table": 14, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Lisa Delboy", "table": 8, "seat": 1, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Brendan Marino", "table": 4, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Tyler Sabath", "table": 4, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Alicia Benton", "table": 8, "seat": 5, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Carly Elsasser", "table": 4, "seat": 2, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Karishma Patel", "table": 13, "seat": 2, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Regina Escobedo", "table": 7, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Liz Siegel", "table": 8, "seat": 4, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Sarah Tanner", "table": 8, "seat": 3, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Meg Perez", "table": 7, "seat": 1, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Christina Kitsa", "table": 6, "seat": 5, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Nicole Chignola", "table": 5, "seat": 5, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Finnegan Mulvaney", "table": 3, "seat": 2, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Karen Watters", "table": 1, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Lauretta O'Hara", "table": 2, "seat": 7, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Yolanda Perez", "table": 5, "seat": 3, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "William Troutman", "table": 13, "seat": 3, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Paty de la Torre", "table": 11, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Guest", "table": 7, "seat": 3, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Sandra Dapic", "table": 4, "seat": 1, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Diosa Yerse", "table": 8, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Deya Solis", "table": 13, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Luisa Castro", "table": 8, "seat": 8, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Jaqueline Santillan", "table": 5, "seat": 2, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Maggie Lopez", "table": 5, "seat": 7, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"},
+            {"name": "Katie Perez", "table": 7, "seat": 1, "meal": "Mushroom Ravioli With Roasted Butternut Squash And A White Wine Cream Sauce"}
+        ];
+
+        const nameInput = document.getElementById('name-input');
+        const autocompleteList = document.getElementById('autocomplete-list');
+        const homepage = document.getElementById('homepage');
+        const resultsPage = document.getElementById('results-page');
+
+        nameInput.addEventListener('input', () => {
+            const value = nameInput.value.toLowerCase();
+            autocompleteList.innerHTML = '';
+            if (value.length === 0) {
+                return;
+            }
+
+            const matches = guestData.filter(guest => guest.name.toLowerCase().includes(value));
+            matches.forEach(guest => {
+                const li = document.createElement('li');
+                li.textContent = guest.name;
+                li.addEventListener('click', () => {
+                    selectGuest(guest);
+                });
+                autocompleteList.appendChild(li);
+            });
+        });
+
+        function selectGuest(guest) {
+            homepage.style.transition = 'opacity 1s ease-in-out';
+            homepage.style.opacity = 0;
+            setTimeout(() => {
+                homepage.classList.add('hidden');
+                showResults(guest);
+            }, 1000);
+        }
+
+        function showResults(guest) {
+            const seatNumber = parseInt(guest.seat);
+            const alebrijeNumber = Math.ceil(seatNumber);
+            const alebrijeImageSrc = `Alebrije${alebrijeNumber}.GIF`;
+            const alebrijeName = alebrijeNames[alebrijeNumber - 1];
+
+            const alebrijeImage = document.getElementById('alebrije-image');
+            alebrijeImage.src = alebrijeImageSrc;
+
+            // This is a simplified check. A more robust solution would analyze the image.
+            const whiteBgAlebrijes = [1, 4, 5]; 
+            if (whiteBgAlebrijes.includes(alebrijeNumber)) {
+                resultsPage.classList.add('white-bg');
+            }
+
+            const description = `<em>Let this alebrije, a ${alebrijeName}, be your spirit's guide to your table as we welcome you to our reception.</em><br><br>${alebrijeDescriptions[alebrijeNumber]}`;
+            document.getElementById('alebrije-description').innerHTML = description;
+            document.getElementById('guest-name').textContent = guest.name;
+            document.getElementById('table-seat').innerHTML = `<strong>Table: ${guest.table}, Seat: ${guest.seat}</strong>`;
+            document.getElementById('meal-selection').innerHTML = `<strong>Meal: ${guest.meal}</strong>`;
+
+            resultsPage.classList.remove('hidden');
+            setTimeout(() => {
+                resultsPage.classList.add('visible');
+                observeElements();
+            }, 100);
+        }
+
+        function observeElements() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.info').forEach(el => {
+                observer.observe(el);
+            });
+        }
+    </script>
+</body>
+</html>
