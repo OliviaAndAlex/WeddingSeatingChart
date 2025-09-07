@@ -102,6 +102,11 @@
             color: #000;
         }
 
+        .results-page.pink-bg {
+            background-color: #FDF9F9;
+            color: #000;
+        }
+
         #alebrije-image {
             max-width: 80%;
             max-height: 40vh;
@@ -375,10 +380,14 @@
             const alebrijeImage = document.getElementById('alebrije-image');
             alebrijeImage.src = alebrijeImageSrc;
 
+            resultsPage.classList.remove('white-bg', 'pink-bg');
+
             // This is a simplified check. A more robust solution would analyze the image.
-            const whiteBgAlebrijes = [1, 4, 5]; 
+            const whiteBgAlebrijes = [1, 2, 4]; 
             if (whiteBgAlebrijes.includes(alebrijeNumber)) {
                 resultsPage.classList.add('white-bg');
+            } else if (alebrijeNumber === 5) {
+                resultsPage.classList.add('pink-bg');
             }
 
             const description = `<em>Let this alebrije, a ${alebrijeName}, be your spirit's guide to your table as we welcome you to our reception.</em><br><br>${alebrijeDescriptions[alebrijeNumber]}`;
