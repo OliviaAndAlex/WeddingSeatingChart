@@ -28,7 +28,12 @@
         #pumpkin-btn {
             cursor: pointer;
             width: 200px;
-            transition: transform 0.3s ease;
+            transition: all 1s ease;
+        }
+
+        #pumpkin-btn.enlarged {
+            width: 50vw;
+            max-width: 400px;
         }
 
         #pumpkin-btn:hover {
@@ -104,7 +109,7 @@
     <div id="invitation-text">
         <p>You’ve been summoned...<br>to gather where the river whispers and the spirits dine.</p>
         <p>
-            🕯️ Rehearsal at the Riverwalk Event Venue: 4:00 PM<br>
+            🕯️ Rehearsal at <a href="https://maps.app.goo.gl/qhgPeCWPpbrttEYR9" target="_blank" style="color: var(--text-color); text-decoration: underline;">the Riverwalk Event Venue</a>: 4:00 PM<br>
             🕯️ Dinner to follow at The Pump House
         </p>
         <p>Till death (and dinner) do us part.</p>
@@ -120,6 +125,7 @@
         const whisperSound = document.getElementById('whisper-sound');
 
         pumpkinBtn.addEventListener('click', () => {
+            pumpkinBtn.classList.add('enlarged');
             invitationText.classList.add('visible');
             whisperSound.play().catch(e => console.error("Audio play failed:", e));
         });
