@@ -1,1 +1,129 @@
-Test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You've Been Summoned</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #B89EFF;
+            --text-color: #fff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Creepster', cursive;
+            overflow: hidden;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        #pumpkin-btn {
+            cursor: pointer;
+            width: 200px;
+            transition: transform 0.3s ease;
+        }
+
+        #pumpkin-btn:hover {
+            transform: scale(1.1);
+        }
+
+        #invitation-text {
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+            font-size: 1.5rem;
+        }
+
+        #invitation-text.visible {
+            opacity: 1;
+            animation: fadeIn 2s forwards, pulse 4s infinite 2s;
+        }
+        
+        .mist {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            animation: float 20s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.7), 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #B89EFF, 0 0 40px #B89EFF;
+            }
+            50% {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.7), 0 0 20px #fff, 0 0 30px #B89EFF, 0 0 40px #B89EFF, 0 0 50px #B89EFF;
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0) scale(1); }
+            25% { transform: translateY(-30px) translateX(25px) scale(1.05); }
+            50% { transform: translateY(0) translateX(-25px) scale(1); }
+            75% { transform: translateY(30px) translateX(0) scale(0.95); }
+            100% { transform: translateY(0) translateX(0) scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            #pumpkin-btn {
+                width: 150px;
+            }
+            #invitation-text {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <img id="pumpkin-btn" src="PumpkinHat.gif" alt="Clickable Pumpkin">
+
+    <div id="invitation-text">
+        <p>You’ve been summoned...<br>to gather where the river whispers and the spirits dine.</p>
+        <p>
+            🕯️ Rehearsal at the Riverwalk Event Venue: 4:00 PM<br>
+            🕯️ Dinner to follow at The Pump House
+        </p>
+        <p>Till death (and dinner) do us part.</p>
+    </div>
+
+    <div class="mist"></div>
+    
+    <audio id="whisper-sound" src="https://cdn.freesound.org/previews/511/511413_11234803-lq.mp3" preload="auto"></audio>
+
+    <script>
+        const pumpkinBtn = document.getElementById('pumpkin-btn');
+        const invitationText = document.getElementById('invitation-text');
+        const whisperSound = document.getElementById('whisper-sound');
+
+        pumpkinBtn.addEventListener('click', () => {
+            invitationText.classList.add('visible');
+            whisperSound.play().catch(e => console.error("Audio play failed:", e));
+        });
+    </script>
+
+</body>
+</html>
