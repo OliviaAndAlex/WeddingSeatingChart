@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación a la Cena de Ensayo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ballet&family=Frank+Ruhl+Libre&display=swap');
+
+        body {
+            background-color: #ffffff;
+            font-family: 'Frank Ruhl Libre', serif;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .invitation {
+            max-width: 600px;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Ballet', cursive;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 0.5rem 0;
+        }
+
+        .closing {
+            font-family: 'Ballet', cursive;
+            font-size: 2rem;
+            margin-top: 2rem;
+            font-style: italic;
+        }
+
+        .butterfly {
+            position: fixed;
+            width: 80px; /* Adjust size as needed */
+            height: 80px; /* Adjust size as needed */
+            z-index: 0;
+            pointer-events: none; /* So they don't interfere with text selection */
+            background-image: url('Monarch.gif');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .butterfly.b2 {
+            background-image: url('Monarch2.gif');
+        }
+
+        /* Animation Keyframes */
+        @keyframes fly-1 {
+            0% { top: 10%; left: -10%; transform: scaleX(-1); }
+            100% { top: 10%; left: 110%; transform: scaleX(-1); }
+        }
+
+        @keyframes fly-2 {
+            0% { top: 50%; left: 110%; transform: scaleX(-1); }
+            100% { top: 50%; left: -10%; transform: scaleX(-1); }
+        }
+        
+        @keyframes fly-3 {
+            0% { top: 90%; left: -10%; transform: scaleX(-1); }
+            100% { top: 90%; left: 110%; transform: scaleX(-1); }
+        }
+
+        @keyframes fly-4 {
+            0% { top: 110%; left: 70%; transform: scaleX(-1) rotate(45deg); }
+            100% { top: -10%; left: 20%; transform: scaleX(-1) rotate(45deg); }
+        }
+
+        @keyframes fly-5 {
+            0% { top: 70%; left: 110%; transform: scaleX(1) rotate(-30deg); }
+            100% { top: 20%; left: -10%; transform: scaleX(1) rotate(-30deg); }
+        }
+
+        .butterfly-1 {
+            animation: fly-1 15s linear infinite;
+            animation-delay: -2s;
+        }
+
+        .butterfly-2 {
+            animation: fly-2 20s linear infinite;
+            animation-delay: -8s;
+        }
+        
+        .butterfly-3 {
+            animation: fly-3 18s linear infinite;
+            animation-delay: -15s;
+        }
+
+        .butterfly-4 {
+            animation: fly-4 22s linear infinite;
+            animation-delay: -4s;
+        }
+
+        .butterfly-5 {
+            animation: fly-5 16s linear infinite;
+            animation-delay: -12s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="butterfly butterfly-1"></div>
+    <div class="butterfly b2 butterfly-2"></div>
+    <div class="butterfly butterfly-3"></div>
+    <div class="butterfly b2 butterfly-4"></div>
+    <div class="butterfly butterfly-5"></div>
+
+    <div class="invitation">
+        <p>En Halloween, el amor en las alas de mariposas va a volar.</p>
+        <p>Acompáñanos para celebrar en nuestro</p>
+
+        <h1>Ensayo de Boda</h1>
+
+        <p>Ensayo en The Riverwalk Event Venue</p>
+        <p>Viernes, 31 de octubre a las 4:00 p.m.</p>
+        
+        <br>
+
+        <p>Cena a continuación en The Pump House</p>
+        <p>Rock Hill, Carolina del Sur</p>
+
+        <p class="closing">Hasta la muerte… y la cena, nos separe.</p>
+    </div>
+
+</body>
+</html>
