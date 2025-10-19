@@ -372,7 +372,7 @@
                 resultsPage.classList.add('pink-bg');
             }
 
-            const description = `<p><em>Let this alebrije, a ${alebrijeName}, be your spirit's guide to your table as we welcome you to our reception.</em></p><p><em>In Mexican culture, alebrijes serve as spiritual guides, helping our lost loved ones navigate the transition from the world of the living to world of the dead. They are guardians of the journey.</em></p><p><em>Tonight, however, we have invited these creatures to serve a new purpose. Instead of guiding a journey beyond, they stand as beacons for the new life Olivia and Alex are about to embark upon, a transition from individuals to life partners.</em></p>${alebrijeDescriptions[alebrijeNumber]}`;
+            const description = `<p><em>Let this alebrije, a ${alebrijeName}, be your spirit's guide to your table as we welcome you to our reception.</em></p><p><em>In Mexican culture, alebrijes serve as spiritual guides, helping our lost loved ones navigate the transition from the world of the living to the world of the dead. They are guardians of the journey.</em></p><p><em>Tonight, however, we have invited these creatures to serve a new purpose. Instead of guiding a journey beyond, they stand as beacons for the new life Olivia and Alex are about to embark upon, a transition from individuals to life partners.</em></p>${alebrijeDescriptions[alebrijeNumber]}`;
             document.getElementById('alebrije-description').innerHTML = description;
             document.getElementById('guest-name').textContent = guest.name;
             const seatLabel = guest.table.startsWith('Mesa') ? 'Asiento' : 'Seat';
@@ -403,4 +403,5 @@
     </script>
 </body>
 </html>
+
 
