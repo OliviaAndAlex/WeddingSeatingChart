@@ -169,10 +169,21 @@
         <p id="table-seat" class="info"></p>
         <p id="meal-selection" class="info"></p>
         <p id="alebrije-description" class="info"></p>
+        <audio id="alebrije-audio" controls class="info" style="margin-top: 20px;"></audio>
     </div>
 
     <script>
         const alebrijeNames = ["toucan", "sea turtle", "goat-dog", "racoon", "winged mongoose", "hedgehog", "hummingbird", "peacock-turtle"];
+        const alebrijeAudioMap = {
+            "toucan": "toucan.wav",
+            "sea turtle": "seaturtle.wav",
+            "racoon": "racoon.wav",
+            "winged mongoose": "mongoose.wav",
+            "goat-dog": "goat-dog.wav",
+            "hedgehog": "hedgehog.wav",
+            "hummingbird": "hummingbird.wav",
+            "peacock-turtle": "peacock-turtle.wav"
+        };
         const alebrijeDescriptions = {
             1: "<i>One might wonder about the significance of the toucan, a creature whose most vibrant signature is its voice. It serves as a guide for a union built on expressive and heartfelt communication, where every word shared is as colorful and intentional as the patterns on its form. Adorned in hues of nature and creativity, this guide suggests that a life shared is a life of joyful expression, a continuous, beautiful dialogue between two spirits.</i>",
             2: "<i>What better guide for a lifelong journey than the sea turtle, an ancient symbol of endurance, stability, and wisdom. With a shell that represents the home we will build and carry with us, this companion reminds us to move through life with patience and a deep sense of grounding. Its deep aquatic colors speak to a partnership that is both well-rooted and emotionally profound, promising a love that is built to last for all of time and conquer the deepest oceans.</i>",
@@ -358,6 +369,10 @@
             }
             
             const alebrijeName = alebrijeNames[alebrijeNumber - 1];
+
+            const audioSrc = alebrijeAudioMap[alebrijeName];
+            const alebrijeAudio = document.getElementById('alebrije-audio');
+            alebrijeAudio.src = audioSrc;
 
             const alebrijeImage = document.getElementById('alebrije-image');
             alebrijeImage.src = alebrijeImageSrc;
